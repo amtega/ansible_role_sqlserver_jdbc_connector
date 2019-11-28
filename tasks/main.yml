@@ -12,6 +12,7 @@
     - role::sqlserver_jdbc_connector
 
 - block:
+    # - import_tasks: facts.yml
     - import_tasks: check.yml
     - import_tasks: download.yml
     - import_tasks: install.yml

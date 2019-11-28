@@ -1,2 +1,80 @@
 ---
 # Role default lower priority variables
+
+# State of the sqlserver jdbc connector. Can be present or absent
+
+sqlserver_jdbc_connector_state: present
+
+# Version of the sqlserver jdbc connector to deploy. You can use the keyword latest
+# to install the latest available version
+
+sqlserver_jdbc_connector_version: latest
+
+# Where to put jdbc connector
+
+sqlserver_jdbc_connector_dir: /opt/sqlserver_jdbc_connector
+
+# The role will try to identify the sqlserver jdbc connector artifact to download
+# from the official site.
+#
+# If you want to download the artifact from another repository yo need to
+# configure the `sqlserver_jdbc_connector_artifact` variable to point to a
+# local/public repository that contains the required artifact
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary
+
+# Remove or not downloaded artifact after install
+
+sqlserver_jdbc_connector_remove_artifact: yes
+
+# ==============================================================================
+
+sqlserver_jdbc_connector_effective_version: 7.4.1.0
+sqlserver_jdbc_connector_effective_language: esn
+
+sqlserver_jdbc_connector_filename: >-
+  sqljdbc_{{ sqlserver_jdbc_connector_effective_version }}_{{ sqlserver_jdbc_connector_effective_language }}.tar.gz.
+sqlserver_jdbc_connector_jar_filename: "{{ sqlserver_jdbc_connector_filename }}.jar"
+sqlserver_jdbc_connector_jar_path: >-
+  {{ sqlserver_jdbc_connector_dir }}/{{ sqlserver_jdbc_connector_jar_filename }}
+
+# https://download.microsoft.com/download/6/F/8/6F87ED10-7353-4080-AE15-E957C828353B/sqljdbc_7.4.1.0_esn.tar.gz
+sqlserver_jdbc_connector_download_url: >-
+  https://gitlab-sistemas.xunta.local/ansible/dml/raw/master/microsoft/sqlserver/jdbc_connector/{{ sqlserver_jdbc_connector_filename }}
+
+
+
+
+
+
+sqlserver_jdbc_connector_artifact:
+    # id: sqlserver_jdbc_connector
+    # type: https
+    # host: "{{ sqlserver_jdbc_connector_official_download_host }}"
+    # path: "{{ sqlserver_jdbc_connector_official_download_path }}"
+    # file: "{{ sqlserver_jdbc_connector_official_download_file }}"
+    # dest: /tmp
+    # timeout: 120
+    # validate_certs: yes
+  id: sqlserver_jdbc_connector_artifact
+  type: gitlab
+  host: https://gitlab.example.local
+  path: /microsoft/sqlserver/jdbc_connector
+  dest: "{{ sqlserver_jdbc_connector_install_dir | dirname }}"
+  unarchive: yes
+  unarchive_creates: "{{ sqlserver_jdbc_connector_install_dir }}"
+  owner: "{{ sqlserver_jdbc_connector_user }}"
+  group: "{{ sqlserver_jdbc_connector_group }}"
+  state: present
+  version: "{{ sqlserver_jdbc_connector_version }}"
+  project: ansible/dml
+  branch: master
+  file: "{{ sqlserver_jdbc_connector_artifact_name }}"
+  password: gitlab_password
+  username: gitlab_user
+  validate_certs: no
+  no_log: "{{ sqlserver_jdbc_connector_no_log }}"
+
+sqlserver_jdbc_connector_no_log: yes

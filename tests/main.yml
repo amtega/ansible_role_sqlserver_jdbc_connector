@@ -1,2 +1,102 @@
 ---
 # Tasks for testing role
+
+- name: configure docker sandbox environment
+  hosts: localhost
+  roles:
+    - role: amtega.docker_presets
+      vars:
+        docker_presets_images_json_query: >-
+          [? starts_with(name, `centos-6`)
+             || starts_with(name, `centos-7`)
+             || starts_with(name, `fedora-29`)
+             || starts_with(name, `fedora-30`) ]
+  tags:
+    - sandbox
+
+- name: run idempotence test
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: started
+  tags:
+    - sandbox
+
+- name: test sqlserver_jdbc_connector role with offical site download
+  hosts: docker_sandbox_containers
+  roles:
+    - amtega.sqlserver_jdbc_connector
+  vars:
+      sqlserver_jdbc_connector_state: present
+      sqlserver_jdbc_connector_version: 8.0.11
+      sqlserver_jdbc_connector_dir: /root/software
+      sqlserver_jdbc_connector_remove_artifact: no
+  tasks:
+    - name: check sqlserver connector download
+      stat:
+        path: "{{ artifact_result.sqlserver_jdbc_connector.download_path }}"
+      register: check_download_result
+
+    - name: check sqlserver connector install
+      stat:
+        path: "{{ sqlserver_jdbc_connector_jar_path }}"
+      register: check_install_result
+
+    - name: check that sqlserver connector was downloaded and installed
+      assert:
+        that:
+          - check_download_result.stat.exists
+          - check_install_result.stat.exists
+
+    - name: create dir for fake jar file
+      file:
+        path: /tmp/connector
+        state: directory
+
+    - name: create fake jar file for custom url download test
+      copy:
+        dest: /tmp/connector/sqlserver-connector-java-13.13.13.jar
+        content: "Fake file"
+        force: yes
+
+    - name: create fake tarball for custom url download test
+      archive:
+        path: /tmp/connector
+        dest: /tmp/connector.tar.gz
+  tags:
+    - idempotence
+
+- name: test sqlserver_jdbc_connector role absent state
+  hosts: docker_sandbox_containers
+  roles:
+    - amtega.sqlserver_jdbc_connector
+  vars:
+      sqlserver_jdbc_connector_state: absent
+      sqlserver_jdbc_connector_version: 8.0.11
+      sqlserver_jdbc_connector_dir: /root/software
+      sqlserver_jdbc_connector_remove_artifact: yes
+  tasks:
+    - name: check sqlserver connector download
+      stat:
+        path: "{{ artifact_result.sqlserver_jdbc_connector.download_path }}"
+      register: check_download_result
+
+    - name: check sqlserver connector install
+      stat:
+        path: "{{ sqlserver_jdbc_connector_jar_path }}"
+      register: check_install_result
+
+    - name: check that sqlserver connector uninstalled
+      assert:
+        that:
+          - not check_download_result.stat.exists
+          - not check_install_result.stat.exists
+
+- name: cleanup docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      vars:
+        docker_sandbox_state: absent
+  tags:
+    - sandbox

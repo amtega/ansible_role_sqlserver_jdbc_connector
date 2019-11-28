@@ -1,0 +1,39 @@
+# ---
+# # Role facts tasks
+#
+# - block:
+#
+# # https://docs.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server?view=sql-server-ver15
+#
+#   # - block:
+#   #     - name: check internet connection availability
+#   #       wait_for:
+#   #         host: "{{ host }}"
+#   #         port: "{{ (port is none) | ternary(80, port) }}"
+#   #         connect_timeout: 1
+#   #         timeout: 1
+#   #       vars:
+#   #         host: "{{ sqlserver_jdbc_connector_site | urlsplit('hostname') }}"
+#   #         port: "{{ sqlserver_jdbc_connector_site | urlsplit('port') }}"
+#   #       register: sqlserver_jdbc_connector_check_internet_result
+#   #
+#   #     - name: setup sqlserver jdbc connector latest version
+#   #       when: sqlserver_jdbc_connector_version == "latest"
+#   #       set_fact:
+#   #          sqlserver_jdbc_connector_latest_version: >-
+#   #            {{ lookup("url", sqlserver_jdbc_connector_site, wantlist=True)
+#   #               | select("search", "<h1>Connector/J *.* *</h1>")
+#   #               | first
+#   #               | regex_replace(".*<h1>Connector/J (.*)</h1>.*", "\1")
+#   #               | trim }}
+#   #   when: >-
+#   #     sqlserver_jdbc_connector_artifact.host
+#   #     == sqlserver_jdbc_connector_site | urlsplit('hostname')
+#
+#   - name: setup fact with sqlserver jdbc connector path
+#     set_fact:
+#      sqlserver_jdbc_connector_jar_path: >-
+#        {{ sqlserver_jdbc_connector_dir }}/{{ sqlserver_jdbc_connector_jar_filename }}
+#   tags:
+#     - role::sqlserver_jdbc_connector
+#     - role::sqlserver_jdbc_connector::facts
