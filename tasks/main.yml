@@ -5,14 +5,14 @@
     name: amtega.check_platform
   vars:
     check_platform_distributions:
-      centos: 6
+      centos: 6  # TODO: Only 7 ?
       fedora: 29
       rhel: 6
   tags:
     - role::sqlserver_jdbc_connector
 
 - block:
-    # - import_tasks: facts.yml
+    - import_tasks: facts.yml
     - import_tasks: check.yml
     - import_tasks: download.yml
     - import_tasks: install.yml
