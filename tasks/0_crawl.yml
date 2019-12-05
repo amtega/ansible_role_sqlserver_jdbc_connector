@@ -1,0 +1,95 @@
+---
+# Role tasks
+
+- name: Web crawling
+  vars:
+    sql_server_version: 15
+    jdbc_version: 7.4
+    language: es-ES
+
+  block:
+
+    - name: Get Microsoft JDBC Driver main web page
+      vars:
+        url_main_page: >-
+          {{ 'https://docs.microsoft.com/en-us/sql/connect/jdbc'
+          + '/download-microsoft-jdbc-driver-for-sql-server'
+          + '?view=sql-server-ver' + sql_server_version | string }}
+      uri:
+        url: "{{ url_main_page }}"
+        return_content: yes
+      register: get_url_main_page_result
+
+    - name: Get Microsoft JDBC Driver latest version number
+      set_fact:
+        # Select JDBC Driver version X.Y
+        sqlserver_jdbc_connector_latest_version: >-
+          {{ get_url_main_page_result.content.splitlines()
+             | select("search", "<a.*Microsoft JDBC Driver .*</a>")
+             | first
+             | regex_replace('.*<a.*Microsoft JDBC Driver (.*)</a>.*', "\1")
+             | trim }}
+
+    - debug:
+        var: sqlserver_jdbc_connector_latest_version
+
+
+    - name: Get url_driver_selection redirection
+      vars:
+        # Select JDBC Driver version X.Y
+        # "url_driver_selection": "https://go.microsoft.com/fwlink/?linkid=2099962"
+        url_driver_selection: >-
+          {{ get_url_main_page_result.content.splitlines()
+             | select("search", "<a.*Microsoft JDBC Driver "
+                                + (jdbc_version | string) + "</a>")
+             | first
+             | regex_replace('.*href="([^"]*)".*', "\1")
+             | trim }}
+      uri:
+        url: "{{ url_driver_selection }}"
+      register: get_url_driver_selection_result
+
+    - debug:
+        var: get_url_driver_selection_result
+
+
+    - name: Get url_driver_download content
+      vars:
+        # Select JDBC Driver version X.Y language L
+        # "url_driver_download": "https://www.microsoft.com/es-ES/download/confirmation.aspx?id=58505"
+        url_driver_download: >-
+          {{ get_url_driver_selection_result.url
+             | regex_replace("en-us", language)
+             | regex_replace("details", "confirmation")
+             | trim }}
+      uri:
+        url: "{{ url_driver_download }}"
+        return_content: yes
+      register: get_url_driver_download_result
+
+    - debug:
+        var: sqlserver_jdbc_connector_archive_name
+
+    - set_fact:
+
+
+    - debug:
+        var: url_driver_download_file
+        # "url_driver_download_file": "https://download.microsoft.com/download/6/F/8/6F87ED10-7353-4080-AE15-E957C828353B/sqljdbc_7.4.1.0_esn.tar.gz"
+
+    - name: Download driver
+      vars:
+        url_driver_download_file: >-
+          {{ get_url_driver_download_result.content.splitlines()
+             | select("search", sqlserver_jdbc_connector_archive_name)
+             | first
+             | regex_replace('.*url:"([^"]*'
+                             + sqlserver_jdbc_connector_archive_name
+                             + ')".*', "\1")
+             | trim }}
+      get_url:
+        url: "{{ url_driver_download_file }}"
+        dest: /tmp
+      register: driver_download_result
+    - debug:
+        var: driver_download_result

@@ -1,0 +1,23 @@
+---
+# Role default lower priority variables
+
+# Versions
+sqlserver_jdbc_connector_jre_version: 8
+sqlserver_jdbc_connector_language: esn
+
+# Version used in archive tar.gz (three digits)
+sqlserver_jdbc_connector_version_lv3: 7.4.1
+sqlserver_jdbc_connector_archive_name: >-
+  sqljdbc_{{ sqlserver_jdbc_connector_version_lv4
+    }}_{{ sqlserver_jdbc_connector_language }}.tar.gz
+
+# Version used in jar (four digits)
+sqlserver_jdbc_connector_version_lv4: "{{ sqlserver_jdbc_connector_version_lv3 }}.0"
+sqlserver_jdbc_connector_jar_name: >-
+  mssql-jdbc-{{ sqlserver_jdbc_connector_version_lv3
+    }}.jre{{ sqlserver_jdbc_connector_jre_version }}.jar
+
+
+
+sqlserver_jdbc_connector_destination_directory: >-
+  /srv/tomcat-instance/lib
