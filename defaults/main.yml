@@ -1,2 +1,18 @@
----
-# Role default lower priority variables
+# Variables to fill the artifact to download from maven central repository.
+# Values extracted from:
+# https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/maven-metadata.xml
+
+sqlserver_jdbc_connector_jar_version: 7.4.1.jre8
+sqlserver_jdbc_connector_maven_artifact_id: mssql-jdbc
+sqlserver_jdbc_connector_maven_group_id: com.microsoft.sqlserver
+sqlserver_jdbc_connector_jar_file_extension: jar
+
+sqlserver_jdbc_connector_jar_name: >-
+  mssql-jdbc-{{ sqlserver_jdbc_connector_jar_version }}.{{
+    sqlserver_jdbc_connector_jar_file_extension }}
+
+# List of instances where psi-probe must be deployed. If the tomcat server
+# was deployed using amtega.tomcat role you can use the name of the instance as
+# value. If not, you must use the instance base path as value.
+
+sqlserver_jdbc_connector_instances: []
