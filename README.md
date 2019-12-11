@@ -6,27 +6,18 @@ This is an [Ansible](http://www.ansible.com) role to deploy SqlServer JDBC conne
 
 A list of all the default variables for this role is available in `defaults/main.yml`.
 
-The role setups the following facts:
-
-- sqlserver_jdbc_connector_latest_version: latest version of the connector available on the web. This fact is only available if you are downloading from the official SqlServer site.
-- sqlserver_jdbc_connector_jar_path: full path to the deployed jar with the connector.
-
-
 ## Example Playbook
 
 This is an example playbook:
 
 ``` yaml
 ---
-- name: msyql_jdpc_connector role sample
+- name: sqlserver jdbc connector role sample
   hosts: localhost
   roles:  
     - amtega.sqlserver_jdbc_connector
   vars:
-    sqlserver_jdbc_connector_state: present
-    sqlserver_jdbc_connector_version: 7.4.1.0_esn
-    sqlserver_jdbc_connector_dir: /root/software    
-    sqlserver_jdbc_connector_remove_artifact: no
+    sqlserver_jdbc_connector_jar_version: 7.4.1.jre8
 ```
 
 ## Testing
