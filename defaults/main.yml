@@ -1,18 +1,38 @@
-# Variables to fill the artifact to download from maven central repository.
-# Values extracted from:
-# https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/maven-metadata.xml
+---
+# Role default lower priority variables
 
-sqlserver_jdbc_connector_jar_version: 7.4.1.jre8
-sqlserver_jdbc_connector_maven_artifact_id: mssql-jdbc
-sqlserver_jdbc_connector_maven_group_id: com.microsoft.sqlserver
-sqlserver_jdbc_connector_jar_file_extension: jar
+# Version to deploy
 
-sqlserver_jdbc_connector_jar_name: >-
-  mssql-jdbc-{{ sqlserver_jdbc_connector_jar_version }}.{{
-    sqlserver_jdbc_connector_jar_file_extension }}
+sqlserver_jdbc_connector_version: 7.4.1.jre8
 
-# List of instances where psi-probe must be deployed. If the tomcat server
-# was deployed using amtega.tomcat role you can use the name of the instance as
-# value. If not, you must use the instance base path as value.
+# Where to put jdbc connector
 
-sqlserver_jdbc_connector_instances: []
+sqlserver_jdbc_connector_dir: /opt/sqlserver_jdbc_connector
+
+# The role will try to identify the connector artifact to download from the the
+# official site based on the variables defined previously.
+#
+# If you want to download the artifact from another repository yo need to
+# configure the `psi_probe_artifact` variable to point to a local/public
+# repository that contains the required artifact
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary.
+
+sqlserver_jdbc_connector_artifact:
+  id: sqlserver_jdbc_connector_artifact
+  type: maven
+  group_id: com.microsoft.sqlserver
+  artifact_id: mssql-jdbc
+  host: http://central.maven.org
+  path: /maven2
+  extension: jar
+  version: "{{ sqlserver_jdbc_connector_version }}"
+  dest: "{{ sqlserver_jdbc_connector_dir }}"
+  dest_file: >-
+    {{ "mssql-jdbc-"
+       + sqlserver_jdbc_connector_version
+       + ".jar" }}
+  validate_certs: false
+  no_log: no
