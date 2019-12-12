@@ -1,23 +1,18 @@
 ---
 # Role tasks
-- name: Download sqlserver jdbc connector jar from search.maven.org
-  include_role:
-    name: amtega.tomcat_application
+
+- include_role:
+    name: amtega.check_platform
   vars:
-    tomcat_application_instances: "{{ sqlserver_jdbc_connector_instances }}"
-    tomcat_application_name: sqlserver_jdbc_connector  # TODO: Verificar
-    tomcat_application_artifacts:
-      - id: sqlserver_jdbc_connector_maven
-        type: maven
-        artifact_id: "{{ sqlserver_jdbc_connector_maven_artifact_id }}"
-        group_id: "{{ sqlserver_jdbc_connector_maven_group_id }}"
-        host: http://central.maven.org
-        path: /maven2
-        extension: "{{ sqlserver_jdbc_connector_jar_file_extension }}"
-        version: "{{ sqlserver_jdbc_connector_jar_version }}"
-        dest: lib # TODO Verificar
-        dest_file: "{{ sqlserver_jdbc_connector_jar_name }}"
-        validate_certs: false
-        no_log: no
+    check_platform_distributions:
+      centos: 6
+      fedora: 29
+      redhat: 6
+
+- name: Deploy sqlserver jdbc connector
+  include_role:
+    name: amtega.artifact
+  vars:
+    artifact: "{{ sqlserver_jdbc_connector_artifact }}"
   tags:
     - role::sqlserver_jdbc_connector

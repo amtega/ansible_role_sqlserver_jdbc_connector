@@ -44,20 +44,19 @@
   roles:
     - role: amtega.sqlserver_jdbc_connector
       vars:
+        sqlserver_jdbc_connector_dir: /tmp
         sqlserver_jdbc_connector_instances: [ "tomcat" ]
   tasks:
-
-    - name: Check download jar file exists
+    - name: Check jar file
       stat:
-        path: "/srv/tomcat/lib/mssql-jdbc-7.4.1.jre8.jar"
+        path: /tmp/mssql-jdbc-7.4.1.jre8.jar
       changed_when: false
       register: sqlserver_jdbc_connector_download_file_result
 
-    - name: Ensure download jar file exists
+    - name: Ensure jar file exists
       assert:
         that:
           - sqlserver_jdbc_connector_download_file_result.stat.exists
-
   tags:
     - idempotence
 
