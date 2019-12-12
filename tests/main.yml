@@ -1,2 +1,71 @@
 ---
 # Tasks for testing role
+
+- name: Configure docker sandbox environment
+  hosts: localhost
+  roles:
+    - role: amtega.docker_presets
+      docker_presets_images_json_query: >-
+        [? starts_with(name, `centos-7`)
+           || starts_with(name, `fedora-30`) ]
+
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: started
+  tags:
+    - sandbox
+
+- name: Prepare docker containers for test
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+      tomcat_version: 8.0.9
+      tomcat_name: tomcat
+      tomcat_cms_roles:
+        - manager-gui
+        - admin-gui
+        - manager-script
+        - manager-jmx
+        - manager-status
+      tomcat_cms_users:
+        - username: admin
+          password: admin
+          roles:
+            - admin-gui
+            - manager-gui
+            - manager-script
+            - manager-jmx
+            - manager-status
+  tags:
+    - prepare
+    - idempotence
+
+- name: Test sqlserver_jdbc_connector role
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.sqlserver_jdbc_connector
+      vars:
+        sqlserver_jdbc_connector_instances: [ "tomcat" ]
+  tasks:
+
+    - name: Check download jar file exists
+      stat:
+        path: "/srv/tomcat/lib/mssql-jdbc-7.4.1.jre8.jar"
+      changed_when: false
+      register: sqlserver_jdbc_connector_download_file_result
+
+    - name: Ensure download jar file exists
+      assert:
+        that:
+          - sqlserver_jdbc_connector_download_file_result.stat.exists
+
+  tags:
+    - idempotence
+
+- name: Cleanup docker docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: absent
+  tags:
+    - cleanup
+    - sandbox
