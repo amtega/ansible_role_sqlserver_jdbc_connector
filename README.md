@@ -12,8 +12,7 @@ This is an example playbook:
 
 ``` yaml
 ---
-- name: sqlserver jdbc connector role sample
-  hosts: localhost
+- hosts: localhost
   roles:  
     - amtega.sqlserver_jdbc_connector
   vars:
