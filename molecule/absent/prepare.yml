@@ -1,0 +1,9 @@
+---
+
+- name: Prepare
+  hosts: molecule_hosts
+  gather_facts: no
+  roles:
+    - role: amtega.sqlserver_jdbc_connector
+      vars:
+        sqlserver_jdbc_connector_state: present

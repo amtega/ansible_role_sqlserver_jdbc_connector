@@ -5,6 +5,15 @@
   include_role:
     name: amtega.artifact
   vars:
-    artifact: "{{ sqlserver_jdbc_connector_artifact }}"
+    override:
+      id: sqlserver_jdbc_connector
+      dest: "{{ sqlserver_jdbc_connector_dir }}"
+      dest_file: >-
+        {{ "mssql-jdbc-"
+           + sqlserver_jdbc_connector_version
+           + ".jar" }}
+      version: "{{ sqlserver_jdbc_connector_version }}"
+      state: "{{ sqlserver_jdbc_connector_state }}"
+    artifact: "{{ sqlserver_jdbc_connector_artifact | combine(override) }}"
   tags:
     - role::sqlserver_jdbc_connector

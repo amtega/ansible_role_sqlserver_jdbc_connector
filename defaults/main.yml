@@ -1,6 +1,10 @@
 ---
 # Role default lower priority variables
 
+# State of the sqlserver jdbc connector. Can be present or absent
+
+sqlserver_jdbc_connector_state: present
+
 # Version to deploy
 
 sqlserver_jdbc_connector_version: 7.4.1.jre8
@@ -25,14 +29,8 @@ sqlserver_jdbc_connector_artifact:
   type: maven
   group_id: com.microsoft.sqlserver
   artifact_id: mssql-jdbc
-  host: http://central.maven.org
+  host: https://repo1.maven.org
   path: /maven2
   extension: jar
-  version: "{{ sqlserver_jdbc_connector_version }}"
-  dest: "{{ sqlserver_jdbc_connector_dir }}"
-  dest_file: >-
-    {{ "mssql-jdbc-"
-       + sqlserver_jdbc_connector_version
-       + ".jar" }}
   validate_certs: false
   no_log: no

@@ -1,0 +1,19 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+    - name: Check sqlserver connector install
+      stat:
+        path: >-
+          {{ sqlserver_jdbc_connector_dir
+             + "/"
+             + "mssql-jdbc-"
+             + sqlserver_jdbc_connector_version
+            + ".jar" }}
+      register: check_connector_result
+
+    - name: Check that sqlserver connector was installed
+      assert:
+        that: check_connector_result.stat.exists
