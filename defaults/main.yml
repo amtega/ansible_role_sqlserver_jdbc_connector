@@ -32,5 +32,5 @@ sqlserver_jdbc_connector_artifact:
   host: https://repo1.maven.org
   path: /maven2
   extension: jar
-  validate_certs: false
+  validate_certs: no
   no_log: no
