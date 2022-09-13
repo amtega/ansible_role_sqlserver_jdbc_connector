@@ -1,8 +1,7 @@
 ---
-# Role tasks
 
 - name: Deploy sqlserver jdbc connector
-  include_role:
+  ansible.builtin.include_role:
     name: amtega.artifact
   vars:
     override:
