@@ -5,7 +5,7 @@
   gather_facts: no
   tasks:
     - name: Check sqlserver connector install
-      stat:
+      ansible.builtin.stat:
         path: >-
           {{ sqlserver_jdbc_connector_dir
              + "/"
@@ -15,5 +15,5 @@
       register: check_connector_result
 
     - name: Check that sqlserver connector was installed
-      assert:
+      ansible.builtin.assert:
         that: check_connector_result.stat.exists
